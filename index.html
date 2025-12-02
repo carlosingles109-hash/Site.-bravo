@@ -1,0 +1,355 @@
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #001f3f;
+    color: #fff;
+    text-align: center;
+  }
+
+  h1, h2 {
+    margin: 20px 0;
+  }
+
+  .barra-container {
+    width: 80%;
+    height: 15px;
+    background-color: #004080;
+    margin: 20px auto;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .barra-progresso {
+    height: 100%;
+    background-color: #00aaff;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .cards, .cores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .card {
+    padding: 15px 25px;
+    background-color: #003366;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+  }
+  .card:hover { transform: scale(1.1); background-color: #0059b3; }
+  .card.selecionado { border: 3px solid #00ffff; }
+
+  .cor {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s, border 0.3s;
+    border: 3px solid transparent;
+  }
+  .cor.selecionado { transform: scale(1.2); border: 3px solid #00ffff; }
+
+  button {
+    padding: 10px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #00aaff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover { background-color: #0088cc; }
+
+  input[type="text"] {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .explicacao {
+    text-align: left;
+    width: 80%;
+    max-width: 500px;
+    margin: 10px auto;
+    background-color: #00264d;
+    padding: 15px;
+    border-radius: 10px;
+  }
+<!DOCTYPE html>
+<html lang="bt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/script.js" defer></script>
+    <link rel="shortcut icon" href="IMG-20251202-WA0000.jpg" type="image/x-icon">
+    <title>SiteBravo</title>
+</head>
+<body>
+<h1>SiteBravo</h1>
+
+<div class="barra-container">
+  <div class="barra-progresso" id="barra"></div>
+</div>
+
+<div id="conteudo">
+  <div id="intro">
+    <p>Bem-vindo ao siteBravo!</p>
+    <p>Escolha seu tipo de site, cor e mais opções.</p>
+    <button onclick="proximoPasso(1)">Começar</button>
+  </div>
+</div>
+
+</body>
+</html>
+
+const tiposDeSite = ["Padaria","Informática","Bolos","Agência","Imóveis","Carros","Telefones","Farmácia","Roupas","Supermercado"];
+const cores = ["#001f3f","#003366","#004080","#0059b3","#0073e6","#3399ff","#66ccff","#99ddff","#ccf0ff","#ffffff","#ffcc00","#ff9900","#ff6600","#ff3300","#ff0066", "#ffffffff"];
+let passo = 0;
+let tipoSelecionado = "";
+let corSelecionada = "";
+let nomeUsuario = "";
+let aprenderProgramar = false;
+
+function atualizarBarra() {
+  const barra = document.getElementById("barra");
+  let valor = passo === 0 ? 0 : passo === 1 ? 25 : passo === 2 ? 50 : passo === 3 ? 75 : 100;
+  barra.style.width = valor + "%";
+}
+
+function proximoPasso(n) {
+  passo = n;
+  atualizarBarra();
+  const conteudo = document.getElementById("conteudo");
+ 
+  if(passo === 1) {
+    conteudo.innerHTML = `
+      <h2>Digite seu nome:</h2>
+      <input type="text" id="nome" placeholder="Seu nome">
+      <button onclick="guardarNome()">Próximo</button>
+    `;
+  }
+
+  if(passo === 2) {
+    conteudo.innerHTML = `
+      <h2>Escolha o tipo de site:</h2>
+      <input type="text" id="pesquisa" placeholder="Buscar site..." oninput="filtrarTipos()">
+      <div class="cards" id="cards"></div>
+    `;
+    mostrarTipos();
+  }
+
+  if(passo === 3) {
+    conteudo.innerHTML = `
+      <h2>Escolha a cor do site:</h2>
+      <div class="cores" id="cores"></div>
+    `;
+    mostrarCores();
+  }
+
+  if(passo === 4) {
+    conteudo.innerHTML = `
+      <h2>Quer aprender a programar comigo?</h2>
+      <button onclick="escolherAprender(true)">Sim</button>
+      <button onclick="escolherAprender(false)">Não</button>
+    `;
+  }
+
+  if(passo === 5) {
+    conteudo.innerHTML = `
+      <h2>Resumo e Preço do Site</h2>
+      <div class="explicacao">
+        <p><strong>Tipo de site:</strong> ${tipoSelecionado}</p>
+        <p><strong>Cor escolhida:</strong> ${corSelecionada}</p>
+        <p><strong>Nome:</strong> ${nomeUsuario}</p>
+        <p><strong>Aprender programação:</strong> ${aprenderProgramar ? "Sim" : "Não"}</p>
+        <p><strong>Preço sugerido:</strong> ${calcularPreco(tipoSelecionado)}</p>
+        <p>Sites de 80k: Super complexos, responsivos, com galeria, pagamento online e várias funcionalidades.<br>
+        Sites de 50k: Complexos, responsivos, bons para negócios médios.<br>
+        Sites de 30k: Funcionais e bonitos, mas com menos funcionalidades.<br>
+        Sites de 20k: Simples, básico para divulgação.</p>
+      </div>
+      <button onclick="enviarWhatsApp()">Enviar para WhatsApp</button>
+    `;
+  }
+}
+
+function guardarNome() {
+  const nome = document.getElementById("nome").value.trim();
+  if(nome === "") return alert("Digite seu nome!");
+  nomeUsuario = nome;
+  proximoPasso(2);
+}
+
+function mostrarTipos() {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+  tiposDeSite.forEach(tipo => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerText = tipo;
+    card.onclick = () => {
+      tipoSelecionado = tipo;
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("selecionado"));
+      card.classList.add("selecionado");
+      setTimeout(()=> proximoPasso(3), 300);
+    };
+    container.appendChild(card);
+  });
+}
+
+function filtrarTipos() {
+  const filtro = document.getElementById("pesquisa").value.toLowerCase();
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+  tiposDeSite.filter(t => t.toLowerCase().includes(filtro)).forEach(tipo => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerText = tipo;
+    card.onclick = () => {
+      tipoSelecionado = tipo;
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("selecionado"));
+      card.classList.add("selecionado");
+      setTimeout(()=> proximoPasso(3), 300);
+    };
+    container.appendChild(card);
+  });
+}
+
+function mostrarCores() {
+  const container = document.getElementById("cores");
+  cores.forEach(cor => {
+    const div = document.createElement("div");
+    div.className = "cor";
+    div.style.backgroundColor = cor;
+    div.onclick = () => {
+      corSelecionada = cor;
+      document.querySelectorAll(".cor").forEach(cc => cc.classList.remove("selecionado"));
+      div.classList.add("selecionado");
+      setTimeout(()=> proximoPasso(4), 300);
+    };
+    container.appendChild(div);
+  });
+}
+
+function escolherAprender(valor) {
+  aprenderProgramar = valor;
+  proximoPasso(5);
+}
+
+function calcularPreco(tipo) {
+  if(["Agência","Imóveis","Carros"].includes(tipo)) return "80.000 Kz";
+  if(["Informática","Farmácia","Supermercado"].includes(tipo)) return "50.000 Kz";
+  if(["Padaria","Bolos","Roupas","Telefones"].includes(tipo)) return "30.000 Kz";
+  return "20.000 Kz";
+}
+
+const precos = [
+  { valor: "100.000 Kz", descricao: "Super complexos, responsivos, com galeria, pagamento online e várias funcionalidades" },
+  { valor: "50.000 Kz", descricao: "Complexos, responsivos, bons para negócios médios" },
+  { valor: "30.000 Kz", descricao: "Funcionais e bonitos, mas com menos funcionalidades" },
+  { valor: "20.000 Kz", descricao: "Simples, básico para divulgação" },
+];
+let precoSelecionado = "";
+
+function proximoPasso(n) {
+  passo = n;
+  atualizarBarra();
+  const conteudo = document.getElementById("conteudo");
+ 
+  if(passo === 1) {
+    conteudo.innerHTML = `
+      <h2>Digite seu nome:</h2>
+      <input type="text" id="nome" placeholder="Seu nome">
+      <button onclick="guardarNome()">Próximo</button>
+    `;
+  }
+
+  if(passo === 2) {
+    conteudo.innerHTML = `
+      <h2>Escolha o tipo de site:</h2>
+      <input type="text" id="pesquisa" placeholder="Buscar site..." oninput="filtrarTipos()">
+      <div class="cards" id="cards"></div>
+    `;
+    mostrarTipos();
+  }
+
+  if(passo === 3) {
+    conteudo.innerHTML = `
+      <h2>Escolha a cor do site:</h2>
+      <div class="cores" id="cores"></div>
+    `;
+    mostrarCores();
+  }
+
+  if(passo === 4) {
+    conteudo.innerHTML = `
+      <h2>Quer aprender a programar comigo?</h2>
+      <button onclick="escolherAprender(true)">Sim</button>
+      <button onclick="escolherAprender(false)">Não</button>
+    `;
+  }
+
+  // NOVA ETAPA: Escolher preço
+  if(passo === 5) {
+    conteudo.innerHTML = `
+      <h2>Escolha o preço do site</h2>
+      <div class="cards" id="precos"></div>
+    `;
+    mostrarPrecos();
+  }
+
+  if(passo === 6) {
+    conteudo.innerHTML = `
+      <h2>Resumo do Site</h2>
+      <div class="explicacao">
+        <p><strong>Tipo de site:</strong> ${tipoSelecionado}</p>
+        <p><strong>Cor escolhida:</strong> ${corSelecionada}</p>
+        <p><strong>Nome:</strong> ${nomeUsuario}</p>
+        <p><strong>Aprender programação:</strong> ${aprenderProgramar ? "Sim" : "Não"}</p>
+        <p><strong>Preço escolhido:</strong> ${precoSelecionado}</p>
+      </div>
+      <button onclick="enviarWhatsApp()">Enviar para WhatsApp</button>
+    `;
+  }
+}
+
+// Mostrar preços
+function mostrarPrecos() {
+  const container = document.getElementById("precos");
+  precos.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<strong>${p.valor}</strong><br>${p.descricao}`;
+    card.onclick = () => {
+      precoSelecionado = p.valor;
+      document.querySelectorAll(".card").forEach(c => c.classList.remove("selecionado"));
+      card.classList.add("selecionado");
+      setTimeout(()=> proximoPasso(6), 300);
+    };
+    container.appendChild(card);
+  });
+}
+
+// Ajuste na função enviarWhatsApp
+function enviarWhatsApp() {
+  const numero = "933662760";
+  const mensagem = `Usuário: ${nomeUsuario}\nTipo de site: ${tipoSelecionado}\nCor: ${corSelecionada}\nAprender programação: ${aprenderProgramar ? "Sim" : "Não"}\nPreço: ${precoSelecionado}`;
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, "_blank");
+}
+
+function enviarWhatsApp() {
+  const numero = "933662760";
+  const mensagem = `Usuário: ${nomeUsuario}\nTipo de site: ${tipoSelecionado}\nCor: ${corSelecionada}\nAprender programação: ${aprenderProgramar ? "Sim" : "Não"}\nPreço: ${calcularPreco(tipoSelecionado)}`;
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, "_blank");
+}
